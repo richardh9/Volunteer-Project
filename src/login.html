@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+    <div id="app">
+        <div id="login">
+            <div class="head">
+                <h4 class="title">Login</h4>
+            </div>
+            <el-divider></el-divider>
+            <div class="body">
+                <div class="input">
+                    <el-input placeholder="Input your Id" v-model="userForm.userId"></el-input>
+                </div>
+                <div class="input">
+                    <el-input placeholder="Input your password" show-password v-model="userForm.password"></el-input>
+                </div>
+            </div>
+            <div class="button-group">
+                <el-button @click="login">Login</el-button>
+                <el-button @click="back">Back Home</el-button>
+            </div>
+        </div>
+
+    </div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script type="module">
+    import {login} from "../js/api/user.js";
+
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                userForm:{
+                    userId: "",
+                    password: "",
+                },
+                role: "Admin"
+            }
+        },
+        methods:{
+            login(){
+                // let data = {
+                //     'id': this.userForm.userId,
+                //     'password': this.userForm.password
+                // }
+                // let res = login(data)
+                // if (res.code == 'success'){
+                //     localStorage.setItem('user', this.userForm.userId)
+                //     localStorage.setItem('role', this.role)
+                //     window.location.href="../src/index.html"
+                // }
+                // else{
+                //     this.$message.error("Login request failed!")
+                // }
+                localStorage.setItem('user', this.userForm.userId)
+                localStorage.setItem('role', this.role)
+                window.location.href="../src/index.html"
+            },
+            back(){
+                window.location.href="../src/index.html"
+            }
+        }
+    })
+</script>
+</html>

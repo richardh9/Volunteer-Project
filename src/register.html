@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/register.css">
+</head>
+<body>
+    <div id="app">
+        <div id="register">
+            <div class="head">
+                <h4 class="title">Register</h4>
+            </div>
+            <el-divider></el-divider>
+            <div class="body">
+                <el-form ref="form" :model="userForm">
+                    <el-form-item label="First Name" class="input">
+                        <el-input placeholder="Input your first name" v-model="userForm.firstName" label="User name:"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Last Name" class="input">
+                        <el-input placeholder="Input your last name" v-model="userForm.lastName" label="User name:"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Password" class="input">
+                        <el-input placeholder="Input password" show-password v-model="userForm.password" label="Password:"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Confirm Password" class="input">
+                        <el-input placeholder="Confirm password" show-password v-model="userForm.confirmPassword" label="Confirm password:"></el-input>
+                    </el-form-item>
+                    <el-form-item class="input">
+                        <el-radio-group v-model="userForm.role">
+                            <el-radio label="Volunteer">Register as a volunteer</el-radio>
+                            <el-radio label="Donor">Register as a donor</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <div class="button-group">
+                <el-button @click="submitForm">Register</el-button>
+                <el-button @click="back('index')">Back Home</el-button>
+            </div>
+        </div>
+        <el-dialog
+                :visible.sync="successVisible"
+                width="30%"
+                :show-close="false"
+                :close-on-click-modal="false"
+                :close-on-press-escape="false"
+        >
+            <span>
+                Successful registry! Now remember your account id: {{userId}} . Click the button and back to the login page.
+            </span>
+            <el-button @click="back('login')">Login</el-button>
+        </el-dialog>
+    </div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    import {register} from "../js/api/user";
+
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                userForm:{
+                    firstName: "",
+                    lastName: "",
+                    password: "",
+                    confirmPassword: "",
+                    role: "2"
+                },
+                userId: "12345678",
+                successVisible: false,
+            }
+        },
+        methods:{
+            submitForm(){
+                let data = {
+                    "first_name": this.userForm.firstName,
+                    "last_name": this.userForm.lastName,
+                    "password": this.userForm.password,
+                    "role": this.userForm.role
+                }
+                let res = register(data)
+                if (res.code == "success"){
+                    this.userId = res.data.userId
+                    this.successVisible = true
+                }
+                else{
+                    this.$message.error("Register failed!")
+                }
+            },
+            back(str){
+                if (str == "login"){
+                    window.location.href="../src/login.html"
+                }
+                if (str == "index"){
+                    window.location.href="../src/index.html"
+                }
+            }
+        }
+    })
+</script>
+</html>

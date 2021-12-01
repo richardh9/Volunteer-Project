@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../css/userInfo.css">
+</head>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<body>
+    <div id="app">
+        <el-container class="body">
+            <el-header class="head">
+                <h3 class="title">Welcome! Your role status is {{role}}</h3>
+                <div class="user-link">
+                    <el-link :underline="false" class="el-link" href="../src/index.html">Return Home</el-link>
+                    <el-link :underline="false" @click.native="logout" href="../src/index.html" class="el-link">Logout</el-link>
+                </div>
+            </el-header>
+            <el-container class="body-container">
+                <el-aside>
+                    <el-menu
+                            class="aside-menu"
+                            default-active="1"
+                            @select="indexChange"
+                            ref="navbar"
+                            background-color="white"
+                            text-color="black"
+                            active-text-color="blue"
+                    >
+                        <el-menu-item index="1">
+                            <template #title>
+                                Personal Profile
+                            </template>
+                        </el-menu-item>
+                        <el-menu-item index="2" v-if="role=='Admin'">
+                            <template #title>
+                                User Management
+                            </template>
+                        </el-menu-item>
+                        <el-menu-item index="3" v-if="role=='Admin'">
+                            <template #title>
+                                Event Management
+                            </template>
+                        </el-menu-item>
+                        <el-menu-item index="4" v-if="role=='Admin'">
+                            <template #title>
+                                Program Management
+                            </template>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+                <el-main>
+                    <div class="user-profile" v-if="currentIndex=='1'">
+                        <div class="edit-info">
+                            <div class="my-info">
+                                <span>User name: {{myInfo.lastName + " " + myInfo.firstName}}</span>
+                            </div>
+                            <div class="my-info">
+                                <span>User id: {{myInfo.userId}}</span>
+                            </div>
+                            <div class="my-info">
+                                <span>User role: {{myInfo.role}}</span>
+                            </div>
+                            <div class="my-info" v-if="myInfo.role=='Volunteer'">
+                                <span>Volunteer time: {{myInfo.volunteerTime}}</span>
+                            </div>
+                            <div class="my-info" v-if="myInfo.role=='Volunteer'">
+                                <span>Volunteer events: {{myInfo.volunteerEvents}}</span>
+                            </div>
+                            <div class="my-info" v-if="myInfo.role=='Donor'">
+                                <span>Donation Amount: {{myInfo.donationAmount}}</span>
+                            </div>
+                            <div class="my-info" v-if="myInfo.role=='Donor'">
+                                <span>Donated events: {{myInfo.donatedEvents}}</span>
+                            </div>
+                            <div class="button-group">
+                                <el-button size="medium" @click="openEditMyInfoDialog">Edit info</el-button>
+                                <el-button size="medium" @click="openEditPasswordDialog">Edit password</el-button>
+                            </div>
+                            <el-dialog title="Edit password"></el-dialog>
+                            <el-dialog title="Edit my info" :visible.sync="editUserNameVisible" :append-to-body="true">
+                                <el-form :model="myInfo">
+                                    <el-input v-model="user" :disabled="true"></el-input>
+                                    <el-input v-model="newName" placeholder="Input new user name"></el-input>
+                                </el-form>
+                                <el-button @click="submitName">Submit</el-button>
+                                <el-button @click="closeUserNameDialog">Exit</el-button>
+                            </el-dialog>
+                        </div>
+                    </div>
+                    <div class="user-management" v-if="currentIndex=='2'">
+                        <el-table
+                                :data="userList"
+                                style="width:100%"
+                                :fit="false"
+                                fit
+                                row-key="id"
+                                border
+                                highlight-current-row
+                        >
+                            <el-table-column
+                                    label="User ID"
+                                    align="center"
+                                    min-width="20%">
+                                <template slot-scope="{row}">
+                                    <span>{{row.userId}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="User Name"
+                                    align="center"
+                                    min-width="20%">
+                                <template slot-scope="{row}">
+                                    <span>{{row.lastName + " " + row.firstName}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Role"
+                                    align="center"
+                                    min-width="10%">
+                                <template slot-scope="{row}">
+                                    <span>{{row.role}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Status"
+                                    align="center"
+                                    min-width="5%">
+                                <template slot-scope="{row}">
+                                    <span>{{statusList[row.status]}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Operation"
+                                    align="center"
+                                    min-width="45%">
+                                <template slot-scope="{row}">
+                                    <el-link type="primary" @click="openEditUserDialog(row)" :underline="false">Edit</el-link>
+                                    <!--edit user info detail-->
+                                    <el-dialog :visible.sync="editUserDialogVisible" :inline="true" title="Edit user">
+                                        <el-form v-model="userInfo">
+                                            <el-form-item label="User ID:">
+                                                <el-input v-model="userInfo.userId"></el-input>
+                                            </el-form-item>
+
+                                            <el-form-item label="First name:">
+                                                <el-input v-model="userInfo.firstName"></el-input>
+                                            </el-form-item>
+
+                                            <el-form-item label="Last name:">
+                                                <el-input v-model="userInfo.lastName"></el-input>
+                                            </el-form-item>
+
+                                            <el-form-item label="Role:">
+                                                <el-select v-model="userInfo.role">
+                                                    <el-option
+                                                            v-for="item in roleList"
+                                                            :key="item"
+                                                            :label="item"
+                                                            :value="item">
+                                                    </el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                        </el-form>
+                                        <el-divider></el-divider>
+                                        <el-button @click="editUser">Save</el-button>
+                                    </el-dialog>
+
+                                    <el-divider direction="vertical"></el-divider>
+                                    <el-link type="primary" :underline="false" @click="openUserDetailDialog(row)" v-if="row.role!='Admin'">
+                                        Detail
+                                    </el-link>
+                                    <!--display selected user's detail-->
+                                    <el-dialog :visible.sync="userDetailDialogVisible" width="40%" title="User detail">
+                                        <span>Role: {{userInfo.role}}</span>
+                                        <div v-if="userInfo.role=='Donor'">
+                                            <span>Total donation amount: ${{userInfo.donationAmount}}</span>
+                                            <el-table :data="userInfo.donationInfo" width="100%">
+                                                <el-table-column
+                                                        label="Donated ID"
+                                                        align="center"
+                                                        min-width="25%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.id}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Donation type"
+                                                        align="center"
+                                                        min-width="25%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.type}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Donation time"
+                                                        align="center"
+                                                        min-width="25%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.donationTime}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                    label="Donation amount"
+                                                    align="center"
+                                                    min-width="25%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.amount}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            </el-table>
+                                        </div>
+
+                                        <div v-if="userInfo.role=='Volunteer'">
+                                            <span>Total volunteer time: {{userInfo.volunteerTime}} hours</span>
+                                            <el-table :data="volunteerEvents" width="100%">
+                                                <el-table-column
+                                                        label="Event ID"
+                                                        align="center"
+                                                        min-width="20%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.id}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Event type"
+                                                        align="center"
+                                                        min-width="20%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.type}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Start time"
+                                                        align="center"
+                                                        min-width="20%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.startTime}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="End time"
+                                                        align="center"
+                                                        min-width="20%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.endTime}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Duty"
+                                                        align="center"
+                                                        min-width="20%">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.duty}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </div>
+                                    </el-dialog>
+                                    <el-divider direction="vertical" v-if="row.role!='Admin'"></el-divider>
+                                    <el-link type="primary" :underline="false" @click="deleteUser(row)">
+                                        Delete
+                                    </el-link>
+                                    <el-divider direction="vertical"></el-divider>
+                                    <el-link type="primary" :underline="false" @click="frozeUser(row)">
+                                        Froze
+                                    </el-link>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                    <div class="event-management" v-if="currentIndex=='3'">
+                        <el-table>
+
+                        </el-table>
+                    </div>
+                    <div class="program-management" v-if="currentIndex=='4'">
+                        <el-table>
+
+                        </el-table>
+                    </div>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+</body>
+<script>
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                user: localStorage.getItem("user"),
+                role: localStorage.getItem("role"),
+                roleList: ["Admin", "Donor", "Volunteer"],
+                currentIndex: '1',
+                editUserNameVisible: false,//edit user's own name dialog
+                editUserPasswordVisible: false,//edit user's own password dialog
+                newName: "",
+                newPassword: "",
+                userList: [{
+                    userId: "12345678",
+                    firstName: "AB",
+                    lastName: "C",
+                    role: "Admin",
+                    volunteerTime: "",
+                    volunteerEvents: {
+                        eventsJoined: [],
+                        eventsDoing: []
+                    },
+                    donationAmount: "",
+                    donationInfo: [],
+                    status: "0"
+                },
+                    {
+                        userId: "12345679",
+                        firstName: "AB",
+                        lastName: "D",
+                        role: "Donor",
+                        volunteerTime: "",
+                        volunteerEvents: {
+                            eventsJoined: [],
+                            eventsDoing: []
+                        },
+                        donationAmount: 100,
+                        donationInfo: [{
+                            id: "125",
+                            type: "Event",
+                            donationTime: "2021-12-01",
+                            amount: 100
+                        }],
+                        status: "0"
+                    },
+                    {
+                        userId: "12345680",
+                        firstName: "AB",
+                        lastName: "E",
+                        role: "Volunteer",
+                        volunteerTime: 100,
+                        volunteerEvents: {
+                            eventsJoined: [{
+                                id: "124",
+                                startTime: "2021-12-01",
+                                endTime: "2021-12-02",
+                                duty: "cleaner"}
+                            ],
+                            eventsDoing: [{
+                                id: "123",
+                                startTime: "2021-12-02",
+                                endTime: "2021-12-02",
+                                duty: "cleaner"}
+                            ]
+                        },
+                        donationAmount: "",
+                        donationInfo: [],
+                        status: "0"
+                    },],//List of users
+                eventList: [],
+                programList: [],
+                volunteerEvents: [],
+                myInfo:{
+                    userId: "12345678",
+                    firstName: "AB",
+                    lastName: "C",
+                    role: "Admin",
+                    volunteerTime: "",
+                    volunteerEvents: [],
+                    donationAmount: "",
+                    donationInfo: [],
+                    status: "0"
+                },
+                userInfo: {
+                    userId: "",
+                    firstName: "",
+                    lastName: "",
+                    role: "",
+                    volunteerTime: "",
+                    volunteerEvents: [],
+                    donationAmount: "",
+                    donationInfo: [],
+                    status: "0",
+                },
+                statusList: {
+                    "0": "normal",
+                    "1": "frozen",
+                    "2": "deleted"
+                },
+                editUserDialogVisible: false,
+                userDetailDialogVisible: false
+            }
+        },
+        methods:{
+            logout(){
+                localStorage.removeItem("user")
+                localStorage.removeItem("role")
+            },
+            ifShow(role){
+                if (role == this.role){
+                    return true
+                }
+                else{
+                    return false
+                }
+            },
+            indexChange(index){
+                this.currentIndex = index
+            },
+            openEditUserName(){
+                this.editUserNameVisible = true
+            },
+            openEditUserPassword(){
+                this.editUserPasswordVisible = true
+            },
+            submitName(){
+                this.editUserNameVisible = false
+                this.$message.success("Successfully edit your user name!")
+            },
+            closeUserNameDialog(){
+                this.newName = ""
+                this.editUserNameVisible = false
+            },
+            //User management part
+            openEditUserDialog(row){
+                this.userInfo = row
+                this.editUserDialogVisible = true
+            },
+            editUser(){
+                this.$message.success('Edit user successfully!')
+                this.editUserDialogVisible = false
+            },
+            openUserDetailDialog(row){
+                this.userInfo = row
+                this.volunteerEvents = []
+                row.volunteerEvents.eventsJoined.forEach(event=>{
+                    this.volunteerEvents.push({
+                        id: event.id,
+                        startTime: event.startTime,
+                        endTime: event.endTime,
+                        duty: event.duty,
+                        type: "finished"
+                    })
+                })
+                row.volunteerEvents.eventsDoing.forEach(event=>{
+                    this.volunteerEvents.push({
+                        id: event.id,
+                        startTime: event.startTime,
+                        endTime: event.endTime,
+                        duty: event.duty,
+                        type: "not finished"
+                    })
+                })
+                this.userDetailDialogVisible = true
+            },
+            deleteUser(row){
+
+            },
+            frozeUser(row){
+
+            },
+        },
+        watch:{
+
+        },
+        create(){
+
+        }
+    })
+</script>
+</html>
