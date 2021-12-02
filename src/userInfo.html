@@ -66,29 +66,50 @@
                                 <span>User role: {{myInfo.role}}</span>
                             </div>
                             <div class="my-info" v-if="myInfo.role=='Volunteer'">
-                                <span>Volunteer time: {{myInfo.volunteerTime}}</span>
-                            </div>
-                            <div class="my-info" v-if="myInfo.role=='Volunteer'">
-                                <span>Volunteer events: {{myInfo.volunteerEvents}}</span>
+                                <span>Volunteer time: {{myInfo.volunteerTime}} hours</span>
                             </div>
                             <div class="my-info" v-if="myInfo.role=='Donor'">
-                                <span>Donation Amount: {{myInfo.donationAmount}}</span>
-                            </div>
-                            <div class="my-info" v-if="myInfo.role=='Donor'">
-                                <span>Donated events: {{myInfo.donatedEvents}}</span>
+                                <span>Donation Amount: ${{myInfo.donationAmount}}</span>
                             </div>
                             <div class="button-group">
                                 <el-button size="medium" @click="openEditMyInfoDialog">Edit info</el-button>
                                 <el-button size="medium" @click="openEditPasswordDialog">Edit password</el-button>
                             </div>
-                            <el-dialog title="Edit password"></el-dialog>
-                            <el-dialog title="Edit my info" :visible.sync="editUserNameVisible" :append-to-body="true">
+                            <!--Edit my info dialog-->
+                            <el-dialog title="Edit my info" :visible.sync="editMyInfoDialogVisible" :append-to-body="true">
                                 <el-form :model="myInfo">
-                                    <el-input v-model="user" :disabled="true"></el-input>
-                                    <el-input v-model="newName" placeholder="Input new user name"></el-input>
+                                    <el-form-item label="User ID:">
+                                        <el-input v-model="user" :disabled="true"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="First name:">
+                                        <el-input v-model="myInfo.firstName"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="First name:">
+                                        <el-input v-model="myInfo.lastName"></el-input>
+                                    </el-form-item>
                                 </el-form>
-                                <el-button @click="submitName">Submit</el-button>
-                                <el-button @click="closeUserNameDialog">Exit</el-button>
+                                <el-button @click="editMyInfo">Submit</el-button>
+                                <el-button @click="closeEditMyInfoDialog">Exit</el-button>
+                            </el-dialog>
+
+                            <!--Edit password dialog-->
+                            <el-dialog title="Edit my password" :visible.sync="editPasswordDialogVisible" :append-to-body="true">
+                                <el-form :model="passwordForm">
+                                    <el-form-item label="User ID:" disabled="true">
+                                        <el-input v-model="user"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="Password:">
+                                        <el-input placeholder="Input your password" show-password v-model="passwordForm.password"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="New password:">
+                                        <el-input placeholder="Input your new password" show-password v-model="passwordForm.newPassword"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="User ID:">
+                                        <el-input placeholder="Confirm your new password" show-password v-model="passwordForm.confirmPassword"></el-input>
+                                    </el-form-item>
+                                </el-form>
+                                <el-button @click="editMyPassword">Submit</el-button>
+                                <el-button @click="closeEditPasswordDialog">Exit</el-button>
                             </el-dialog>
                         </div>
                     </div>
@@ -262,12 +283,18 @@
                                         </div>
                                     </el-dialog>
                                     <el-divider direction="vertical" v-if="row.role!='Admin'"></el-divider>
-                                    <el-link type="primary" :underline="false" @click="deleteUser(row)">
+                                    <el-link type="primary" :underline="false" @click="deleteUser(row)" v-if="row.status!='2'">
                                         Delete
                                     </el-link>
+                                    <el-link type="primary" :underline="false" @click="recoverUser(row)" v-if="row.status=='2'">
+                                        Recover
+                                    </el-link>
                                     <el-divider direction="vertical"></el-divider>
-                                    <el-link type="primary" :underline="false" @click="frozeUser(row)">
+                                    <el-link type="primary" :underline="false" @click="frozeUser(row)" v-if="row.status!='1'">
                                         Froze
+                                    </el-link>
+                                    <el-link type="primary" :underline="false" @click="unfrozeUser(row)" v-if="row.status=='1'">
+                                        Unfroze
                                     </el-link>
                                 </template>
                             </el-table-column>
@@ -288,7 +315,9 @@
         </el-container>
     </div>
 </body>
-<script>
+<script type="module">
+    import {editName, editStatus, editPassword, editRole} from "../js/api/user.js";
+
     new Vue({
         el: '#app',
         data: function() {
@@ -297,12 +326,12 @@
                 role: localStorage.getItem("role"),
                 roleList: ["Admin", "Donor", "Volunteer"],
                 currentIndex: '1',
-                editUserNameVisible: false,//edit user's own name dialog
-                editUserPasswordVisible: false,//edit user's own password dialog
+                editMyInfoDialogVisible: false,//edit user's own info dialog
+                editPasswordDialogVisible: false,//edit user's own password dialog
                 newName: "",
                 newPassword: "",
                 userList: [{
-                    userId: "12345678",
+                    userId: "123456",
                     firstName: "AB",
                     lastName: "C",
                     role: "Admin",
@@ -327,7 +356,7 @@
                         },
                         donationAmount: 100,
                         donationInfo: [{
-                            id: "125",
+                            id: "123",
                             type: "Event",
                             donationTime: "2021-12-01",
                             amount: 100
@@ -358,9 +387,36 @@
                         donationInfo: [],
                         status: "0"
                     },],//List of users
-                eventList: [],
-                programList: [],
-                volunteerEvents: [],
+                eventList: [{
+                    eventId: "123",
+                    title: "ABC",
+                    startTime: "2021-12-01",
+                    endTime: "2021-12-02",
+                    place: "Beijing",
+                    amountOfFund: 100,
+                    requiredVolunteersNumber: 100,
+                    VolunteersNumberNow: 90,
+                    description: "ABC is a event.",
+                    status: "0",
+                    programBelongsTo: "321",
+                    volunteersInfo: [],
+                    donorsInfo: [{
+                        donorId: "12345679",
+                        donationTime: "2021-12-01",
+                        amount: 100
+                    }]
+                }],
+                programList: [{
+                    programId: "321",
+                    event: [{
+                        eventId: "123",
+                    },],
+                    title: "ABCD",
+                    amountOfFund: 100,
+                    status: "0",
+                    donorsInfo: []
+                }],
+                volunteerEvents: [],//List of every events including doing and be done
                 myInfo:{
                     userId: "12345678",
                     firstName: "AB",
@@ -371,6 +427,12 @@
                     donationAmount: "",
                     donationInfo: [],
                     status: "0"
+                },
+                passwordForm:{
+                    id: localStorage.getItem("user"),
+                    password: "",
+                    newPassword: "",
+                    confirmPassword: ""
                 },
                 userInfo: {
                     userId: "",
@@ -408,27 +470,70 @@
             indexChange(index){
                 this.currentIndex = index
             },
-            openEditUserName(){
-                this.editUserNameVisible = true
+            openEditMyInfoDialog(){
+                this.editMyInfoDialogVisible = true
             },
-            openEditUserPassword(){
-                this.editUserPasswordVisible = true
+            openEditPasswordDialog(){
+                this.editPasswordDialogVisible = true
             },
-            submitName(){
-                this.editUserNameVisible = false
-                this.$message.success("Successfully edit your user name!")
+            editMyInfo(){
+                let res = editName({
+                    first_name: this.myInfo.firstName,
+                    last_name: this.myInfo.lastName
+                })
+                if (res.code == "success"){
+                    this.$message.success('Edit your info successfully!')
+                }
+                else{
+                    this.$message.error('Operation failed!')
+                }
+                this.editUserDialogVisible = false
             },
-            closeUserNameDialog(){
-                this.newName = ""
-                this.editUserNameVisible = false
+            editMyPassword(){
+                let res = editPassword({
+                    id: this.passwordForm.id,
+                    password: this.passwordForm.password,
+                    new_password: this.passwordForm.newPassword
+                })
+                if (res.code == "success"){
+                    this.$message.success('Edit password successfully!')
+                }
+                else{
+                    this.$message.error('Operation failed!')
+                }
+                this.editPasswordDialogVisible = false
             },
-            //User management part
+            closeEditMyInfoDialog(){
+                this.editMyInfoDialogVisible = false
+            },
+            closeEditPasswordDialog(){
+                this.editPasswordDialogVisible = false
+            },
+            // User management part
             openEditUserDialog(row){
                 this.userInfo = row
                 this.editUserDialogVisible = true
             },
             editUser(){
-                this.$message.success('Edit user successfully!')
+                let res = editName({
+                    first_name: this.userInfo.firstName,
+                    last_name: this.userInfo.lastName
+                })
+                if (res.code == "success"){
+                    res = editRole({
+                        id: localStorage.getItem('user'),
+                        role: this.userInfo.role
+                    })
+                    if (res.code == "success"){
+                        this.$message.success('Edit user info successfully!')
+                    }
+                    else{
+                        this.$message.error('Operation failed!')
+                    }
+                }
+                else{
+                    this.$message.error('Operation failed!')
+                }
                 this.editUserDialogVisible = false
             },
             openUserDetailDialog(row){
@@ -455,11 +560,53 @@
                 this.userDetailDialogVisible = true
             },
             deleteUser(row){
-
+                let res = editStatus({
+                    'id': row.userId,
+                    'status': "2",
+                })
+                if (res.code == "success"){
+                    this.$message.success("Delete user successfully!")
+                }
+                else{
+                    this.$message.error("Operation failed!")
+                }
+            },
+            recoverUser(row){
+                let res = editStatus({
+                    'id': row.userId,
+                    'status': "0",
+                })
+                if (res.code == "success"){
+                    this.$message.success("Recover user successfully!")
+                }
+                else{
+                    this.$message.error("Operation failed!")
+                }
             },
             frozeUser(row){
-
+                let res = editStatus({
+                    'id': row.userId,
+                    'status': "1",
+                })
+                if (res.code == "success"){
+                    this.$message.success("Froze user successfully!")
+                }
+                else{
+                    this.$message.error("Operation failed!")
+                }
             },
+            unfrozeUser(row){
+                let res = editStatus({
+                    'id': row.userId,
+                    'status': "0",
+                })
+                if (res.code == "success"){
+                    this.$message.success("Unfroze user successfully!")
+                }
+                else{
+                    this.$message.error("Operation failed!")
+                }
+            }
         },
         watch:{
 
