@@ -142,6 +142,7 @@
                             <el-table-column
                                     label="Role"
                                     align="center"
+                                    sortable
                                     min-width="10%">
                                 <template slot-scope="{row}">
                                     <span>{{row.role}}</span>
@@ -301,8 +302,72 @@
                         </el-table>
                     </div>
                     <div class="event-management" v-if="currentIndex=='3'">
-                        <el-table>
-
+                        <el-button type="primary">Create event</el-button>
+                        <el-table :data="eventList">
+                            <el-table-column
+                                    label="Event ID"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>{{row.eventId}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Title"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>{{row.title}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Status"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>{{eventStatus[row.status]}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Start time"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>{{row.startTime}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="End time"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>{{row.endTime}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Required volunteers number"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>{{row.requiredVolunteersNumber}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Volunteers number so far"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>{{row.volunteersNumberSoFar}}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    label="Amount of fund"
+                                    align="center"
+                                    min-width="100px">
+                                <template slot-scope="{row}">
+                                    <span>${{row.amountOfFund}}</span>
+                                </template>
+                            </el-table-column>
                         </el-table>
                     </div>
                     <div class="program-management" v-if="currentIndex=='4'">
@@ -395,7 +460,7 @@
                     place: "Beijing",
                     amountOfFund: 100,
                     requiredVolunteersNumber: 100,
-                    VolunteersNumberNow: 90,
+                    volunteersNumberSoFar: 90,
                     description: "ABC is a event.",
                     status: "0",
                     programBelongsTo: "321",
@@ -448,6 +513,11 @@
                 statusList: {
                     "0": "normal",
                     "1": "frozen",
+                    "2": "deleted"
+                },
+                eventStatus: {
+                    "0": "normal",
+                    "1": "finished",
                     "2": "deleted"
                 },
                 editUserDialogVisible: false,
@@ -606,7 +676,9 @@
                 else{
                     this.$message.error("Operation failed!")
                 }
-            }
+            },
+            //Event management part
+
         },
         watch:{
 
