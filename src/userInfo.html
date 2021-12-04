@@ -11,222 +11,229 @@
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <body>
-    <div id="app">
-        <el-container class="body">
-            <el-header class="head">
-                <h3 class="title">Welcome! Your role status is {{role}}</h3>
-                <div class="user-link">
-                    <el-link :underline="false" class="el-link" href="../src/index.html">Return Home</el-link>
-                    <el-link :underline="false" @click.native="logout" href="../src/index.html" class="el-link">Logout</el-link>
-                </div>
-            </el-header>
-            <el-container class="body-container">
-                <el-aside>
-                    <el-menu
-                            class="aside-menu"
-                            default-active="1"
-                            @select="indexChange"
-                            ref="navbar"
-                            background-color="white"
-                            text-color="black"
-                            active-text-color="blue"
-                    >
-                        <el-menu-item index="1">
-                            <template #title>
-                                Personal Profile
-                            </template>
-                        </el-menu-item>
-                        <el-menu-item index="2" v-if="role=='Admin'">
-                            <template #title>
-                                User Management
-                            </template>
-                        </el-menu-item>
-                        <el-menu-item index="3" v-if="role=='Admin'">
-                            <template #title>
-                                Event Management
-                            </template>
-                        </el-menu-item>
-                        <el-menu-item index="4" v-if="role=='Admin'">
-                            <template #title>
-                                Program Management
-                            </template>
-                        </el-menu-item>
-                    </el-menu>
-                </el-aside>
-                <el-main>
-                    <div class="user-profile" v-if="currentIndex=='1'">
-                        <div class="edit-info">
-                            <div class="my-info">
-                                <span>User name: {{myInfo.lastName + " " + myInfo.firstName}}</span>
-                            </div>
-                            <div class="my-info">
-                                <span>User id: {{myInfo.userId}}</span>
-                            </div>
-                            <div class="my-info">
-                                <span>User role: {{myInfo.role}}</span>
-                            </div>
-                            <div class="my-info" v-if="myInfo.role=='Volunteer'">
-                                <span>Volunteer time: {{myInfo.volunteerTime}} hours</span>
-                            </div>
-                            <div class="my-info" v-if="myInfo.role=='Donor'">
-                                <span>Donation Amount: ${{myInfo.donationAmount}}</span>
-                            </div>
-                            <div class="button-group">
-                                <el-button size="medium" @click="openEditMyInfoDialog">Edit info</el-button>
-                                <el-button size="medium" @click="openEditPasswordDialog">Edit password</el-button>
-                            </div>
-                            <!--Edit my info dialog-->
-                            <el-dialog title="Edit my info" :visible.sync="editMyInfoDialogVisible" :append-to-body="true">
-                                <el-form :model="myInfo">
-                                    <el-form-item label="User ID:">
-                                        <el-input v-model="user" :disabled="true"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="First name:">
-                                        <el-input v-model="myInfo.firstName"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="First name:">
-                                        <el-input v-model="myInfo.lastName"></el-input>
-                                    </el-form-item>
-                                </el-form>
-                                <el-button @click="editMyInfo">Submit</el-button>
-                                <el-button @click="closeEditMyInfoDialog">Exit</el-button>
-                            </el-dialog>
-
-                            <!--Edit password dialog-->
-                            <el-dialog title="Edit my password" :visible.sync="editPasswordDialogVisible" :append-to-body="true">
-                                <el-form :model="passwordForm">
-                                    <el-form-item label="User ID:" disabled="true">
-                                        <el-input v-model="user"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="Password:">
-                                        <el-input placeholder="Input your password" show-password v-model="passwordForm.password"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="New password:">
-                                        <el-input placeholder="Input your new password" show-password v-model="passwordForm.newPassword"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="User ID:">
-                                        <el-input placeholder="Confirm your new password" show-password v-model="passwordForm.confirmPassword"></el-input>
-                                    </el-form-item>
-                                </el-form>
-                                <el-button @click="editMyPassword">Submit</el-button>
-                                <el-button @click="closeEditPasswordDialog">Exit</el-button>
-                            </el-dialog>
+<div id="app">
+    <el-container class="body">
+        <el-header class="head">
+            <h3 class="title">Welcome! Your role status is {{role}}</h3>
+            <div class="user-link">
+                <el-link :underline="false" class="el-link" href="../src/index.html">Return Home</el-link>
+                <el-link :underline="false" @click.native="logout" href="../src/index.html" class="el-link">Logout
+                </el-link>
+            </div>
+        </el-header>
+        <el-container class="body-container">
+            <el-aside>
+                <el-menu
+                        class="aside-menu"
+                        default-active="1"
+                        @select="indexChange"
+                        ref="navbar"
+                        background-color="white"
+                        text-color="black"
+                        active-text-color="blue"
+                >
+                    <el-menu-item index="1">
+                        <template #title>
+                            Personal Profile
+                        </template>
+                    </el-menu-item>
+                    <el-menu-item index="2" v-if="role=='Admin'">
+                        <template #title>
+                            User Management
+                        </template>
+                    </el-menu-item>
+                    <el-menu-item index="3" v-if="role=='Admin'">
+                        <template #title>
+                            Event Management
+                        </template>
+                    </el-menu-item>
+                    <el-menu-item index="4" v-if="role=='Admin'">
+                        <template #title>
+                            Program Management
+                        </template>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+            <el-main>
+                <div class="user-profile" v-if="currentIndex=='1'">
+                    <div class="edit-info">
+                        <div class="my-info">
+                            <span>User name: {{myInfo.lastName + " " + myInfo.firstName}}</span>
                         </div>
+                        <div class="my-info">
+                            <span>User id: {{myInfo.userId}}</span>
+                        </div>
+                        <div class="my-info">
+                            <span>User role: {{myInfo.role}}</span>
+                        </div>
+                        <div class="my-info" v-if="myInfo.role=='Volunteer'">
+                            <span>Volunteer time: {{myInfo.volunteerTime}} hours</span>
+                        </div>
+                        <div class="my-info" v-if="myInfo.role=='Donor'">
+                            <span>Donation Amount: ${{myInfo.donationAmount}}</span>
+                        </div>
+                        <div class="button-group">
+                            <el-button size="medium" @click="openEditMyInfoDialog">Edit info</el-button>
+                            <el-button size="medium" @click="openEditPasswordDialog">Edit password</el-button>
+                        </div>
+                        <!--Edit my info dialog-->
+                        <el-dialog title="Edit my info" :visible.sync="editMyInfoDialogVisible" :append-to-body="true">
+                            <el-form :model="myInfo" :rule="myInfoRule">
+                                <el-form-item label="User ID:">
+                                    <el-input v-model="user" :disabled="true"></el-input>
+                                </el-form-item>
+                                <el-form-item label="First name:">
+                                    <el-input v-model="myInfo.firstName" prop="firstName"></el-input>
+                                </el-form-item>
+                                <el-form-item label="First name:">
+                                    <el-input v-model="myInfo.lastName" prop="lastName"></el-input>
+                                </el-form-item>
+                            </el-form>
+                            <el-button @click="editMyInfo">Submit</el-button>
+                            <el-button @click="closeEditMyInfoDialog">Exit</el-button>
+                        </el-dialog>
+
+                        <!--Edit password dialog-->
+                        <el-dialog title="Edit my password" :visible.sync="editPasswordDialogVisible"
+                                   :append-to-body="true">
+                            <el-form :model="passwordForm">
+                                <el-form-item label="User ID:" disabled="true">
+                                    <el-input v-model="user"></el-input>
+                                </el-form-item>
+                                <el-form-item label="Password:">
+                                    <el-input placeholder="Input your password" show-password
+                                              v-model="passwordForm.password"></el-input>
+                                </el-form-item>
+                                <el-form-item label="New password:">
+                                    <el-input placeholder="Input your new password" show-password
+                                              v-model="passwordForm.newPassword"></el-input>
+                                </el-form-item>
+                                <el-form-item label="User ID:">
+                                    <el-input placeholder="Confirm your new password" show-password
+                                              v-model="passwordForm.confirmPassword"></el-input>
+                                </el-form-item>
+                            </el-form>
+                            <el-button @click="editMyPassword">Submit</el-button>
+                            <el-button @click="closeEditPasswordDialog">Exit</el-button>
+                        </el-dialog>
                     </div>
-                    <div class="user-management" v-if="currentIndex=='2'">
-                        <el-table
-                                :data="userList"
-                                style="width:100%"
-                                :fit="false"
-                                fit
-                                row-key="id"
-                                border
-                                highlight-current-row
-                        >
-                            <el-table-column
-                                    label="User ID"
-                                    align="center"
-                                    min-width="20%">
-                                <template slot-scope="{row}">
-                                    <span>{{row.userId}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="User Name"
-                                    align="center"
-                                    min-width="20%">
-                                <template slot-scope="{row}">
-                                    <span>{{row.lastName + " " + row.firstName}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Role"
-                                    align="center"
-                                    sortable
-                                    min-width="10%">
-                                <template slot-scope="{row}">
-                                    <span>{{row.role}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Status"
-                                    align="center"
-                                    min-width="5%">
-                                <template slot-scope="{row}">
-                                    <span>{{statusList[row.status]}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Operation"
-                                    align="center"
-                                    min-width="45%">
-                                <template slot-scope="{row}">
-                                    <el-link type="primary" @click="openEditUserDialog(row)" :underline="false">Edit</el-link>
-                                    <!--edit user info detail-->
-                                    <el-dialog :visible.sync="editUserDialogVisible" :inline="true" title="Edit user">
-                                        <el-form v-model="userInfo">
-                                            <el-form-item label="User ID:">
-                                                <el-input v-model="userInfo.userId"></el-input>
-                                            </el-form-item>
+                </div>
+                <div class="user-management" v-if="currentIndex=='2'">
+                    <el-table
+                            :data="userList"
+                            style="width:100%"
+                            :fit="false"
+                            fit
+                            row-key="id"
+                            border
+                            highlight-current-row
+                    >
+                        <el-table-column
+                                label="User ID"
+                                align="center"
+                                min-width="20%">
+                            <template slot-scope="{row}">
+                                <span>{{row.userId}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="User Name"
+                                align="center"
+                                min-width="20%">
+                            <template slot-scope="{row}">
+                                <span>{{row.lastName + " " + row.firstName}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Role"
+                                align="center"
+                                sortable
+                                min-width="10%">
+                            <template slot-scope="{row}">
+                                <span>{{row.role}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Status"
+                                align="center"
+                                min-width="10%">
+                            <template slot-scope="{row}">
+                                <span>{{statusList[row.status]}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Operation"
+                                align="center"
+                                min-width="40%">
+                            <template slot-scope="{row}">
+                                <el-link type="primary" @click="openEditUserDialog(row)" :underline="false">Edit
+                                </el-link>
+                                <!--edit user info detail-->
+                                <el-dialog :visible.sync="editUserDialogVisible" :inline="true" title="Edit user">
+                                    <el-form v-model="userInfo">
+                                        <el-form-item label="User ID:" disabled="true">
+                                            <el-input v-model="userInfo.userId"></el-input>
+                                        </el-form-item>
 
-                                            <el-form-item label="First name:">
-                                                <el-input v-model="userInfo.firstName"></el-input>
-                                            </el-form-item>
+                                        <el-form-item label="First name:">
+                                            <el-input v-model="userInfo.firstName"></el-input>
+                                        </el-form-item>
 
-                                            <el-form-item label="Last name:">
-                                                <el-input v-model="userInfo.lastName"></el-input>
-                                            </el-form-item>
+                                        <el-form-item label="Last name:">
+                                            <el-input v-model="userInfo.lastName"></el-input>
+                                        </el-form-item>
 
-                                            <el-form-item label="Role:">
-                                                <el-select v-model="userInfo.role">
-                                                    <el-option
-                                                            v-for="item in roleList"
-                                                            :key="item"
-                                                            :label="item"
-                                                            :value="item">
-                                                    </el-option>
-                                                </el-select>
-                                            </el-form-item>
-                                        </el-form>
-                                        <el-divider></el-divider>
-                                        <el-button @click="editUser">Save</el-button>
-                                    </el-dialog>
+                                        <el-form-item label="Role:">
+                                            <el-select v-model="userInfo.role">
+                                                <el-option
+                                                        v-for="item in roleList"
+                                                        :key="item"
+                                                        :label="item"
+                                                        :value="item">
+                                                </el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-form>
+                                    <el-divider></el-divider>
+                                    <el-button @click="editUser">Save</el-button>
+                                </el-dialog>
 
-                                    <el-divider direction="vertical"></el-divider>
-                                    <el-link type="primary" :underline="false" @click="openUserDetailDialog(row)" v-if="row.role!='Admin'">
-                                        Detail
-                                    </el-link>
-                                    <!--display selected user's detail-->
-                                    <el-dialog :visible.sync="userDetailDialogVisible" width="40%" title="User detail">
-                                        <span>Role: {{userInfo.role}}</span>
-                                        <div v-if="userInfo.role=='Donor'">
-                                            <span>Total donation amount: ${{userInfo.donationAmount}}</span>
-                                            <el-table :data="userInfo.donationInfo" width="100%">
-                                                <el-table-column
-                                                        label="Donated ID"
-                                                        align="center"
-                                                        min-width="25%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.id}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column
-                                                        label="Donation type"
-                                                        align="center"
-                                                        min-width="25%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.type}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column
-                                                        label="Donation time"
-                                                        align="center"
-                                                        min-width="25%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.donationTime}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" :underline="false" @click="openUserDetailDialog(row)"
+                                         v-if="row.role!='Admin'">
+                                    Detail
+                                </el-link>
+                                <!--display selected user's detail-->
+                                <el-dialog :visible.sync="userDetailDialogVisible" width="40%" title="User detail">
+                                    <span>Role: {{userInfo.role}}</span>
+                                    <div v-if="userInfo.role=='Donor'">
+                                        <span>Total donation amount: ${{userInfo.donationAmount}}</span>
+                                        <el-table :data="userInfo.donationInfo" width="100%">
+                                            <el-table-column
+                                                    label="Donated ID"
+                                                    align="center"
+                                                    min-width="25%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.id}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                    label="Donation type"
+                                                    align="center"
+                                                    min-width="25%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.type}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                    label="Donation time"
+                                                    align="center"
+                                                    min-width="25%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.donationTime}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
                                                     label="Donation amount"
                                                     align="center"
                                                     min-width="25%">
@@ -234,158 +241,353 @@
                                                     <span>{{row.amount}}</span>
                                                 </template>
                                             </el-table-column>
-                                            </el-table>
-                                        </div>
+                                        </el-table>
+                                    </div>
 
-                                        <div v-if="userInfo.role=='Volunteer'">
-                                            <span>Total volunteer time: {{userInfo.volunteerTime}} hours</span>
-                                            <el-table :data="volunteerEvents" width="100%">
-                                                <el-table-column
-                                                        label="Event ID"
-                                                        align="center"
-                                                        min-width="20%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.id}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column
-                                                        label="Event type"
-                                                        align="center"
-                                                        min-width="20%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.type}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column
-                                                        label="Start time"
-                                                        align="center"
-                                                        min-width="20%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.startTime}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column
-                                                        label="End time"
-                                                        align="center"
-                                                        min-width="20%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.endTime}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                                <el-table-column
-                                                        label="Duty"
-                                                        align="center"
-                                                        min-width="20%">
-                                                    <template slot-scope="{row}">
-                                                        <span>{{row.duty}}</span>
-                                                    </template>
-                                                </el-table-column>
-                                            </el-table>
-                                        </div>
+                                    <div v-if="userInfo.role=='Volunteer'">
+                                        <span>Total volunteer time: {{userInfo.volunteerTime}} hours</span>
+                                        <el-table :data="volunteerEvents" width="100%">
+                                            <el-table-column
+                                                    label="Event ID"
+                                                    align="center"
+                                                    min-width="20%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.id}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                    label="Event type"
+                                                    align="center"
+                                                    min-width="20%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.type}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                    label="Start time"
+                                                    align="center"
+                                                    min-width="20%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.startTime}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                    label="End time"
+                                                    align="center"
+                                                    min-width="20%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.endTime}}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column
+                                                    label="Duty"
+                                                    align="center"
+                                                    min-width="20%">
+                                                <template slot-scope="{row}">
+                                                    <span>{{row.duty}}</span>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </div>
+                                </el-dialog>
+                                <el-divider direction="vertical" v-if="row.role!='Admin'"></el-divider>
+                                <el-link type="primary" :underline="false" @click="deleteUser(row)"
+                                         v-if="row.status!='2'">
+                                    Delete
+                                </el-link>
+                                <el-link type="primary" :underline="false" @click="recoverUser(row)"
+                                         v-if="row.status=='2'">
+                                    Recover
+                                </el-link>
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" :underline="false" @click="frozeUser(row)"
+                                         v-if="row.status!='1'">
+                                    Froze
+                                </el-link>
+                                <el-link type="primary" :underline="false" @click="unfrozeUser(row)"
+                                         v-if="row.status=='1'">
+                                    Unfroze
+                                </el-link>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <div class="event-management" v-if="currentIndex=='3'">
+                    <el-table :data="eventList">
+                        <el-table-column
+                                label="Event ID"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.eventId}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Title"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.title}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Status"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{eventStatus[row.status]}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Start time"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.startTime}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="End time"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.endTime}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Required volunteers number"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.requiredVolunteersNumber}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Volunteers number so far"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.volunteersNumberSoFar}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Amount of fund"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>${{row.amountOfFund}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+                <div class="program-management" v-if="currentIndex=='4'">
+                    <el-button type="primary" @click="openCreateProgramDialog">Create program</el-button>
+                    <el-table :data="programList">
+                        <el-table-column
+                                label="Program ID"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.programId}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Title"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{row.title}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Status"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>{{eventStatus[row.status]}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Amount of fund"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <span>${{row.amountOfFund}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Operations"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <el-link type="primary" :underline="false" @click="openEventsInfoDialog(row)">
+                                    Events info
+                                </el-link>
+                                <el-dialog :visible.sync="eventsInfoDialogVisible" title="Events info">
+                                    <el-button type="primary" @click="openCreateEventDialog">Create event</el-button>
+                                    <el-dialog :visible.sync="createEventDialogVisible" title="Create new event">
+                                        <el-form v-model="newEvent">
+                                            <el-form-item label="Title:">
+                                                <el-input placeholder="Input the event's title" v-model="newEvent.title"></el-input>
+                                            </el-form-item>
+
+                                            <el-form-item label="Start time:">
+                                                <el-date-picker
+                                                        v-model="newEvent.startTime"
+                                                        type="datetime"
+                                                        placeholder="Select start time"
+                                                >
+                                                </el-date-picker>
+                                            </el-form-item>
+
+                                            <el-form-item label="End time:">
+                                                <el-date-picker
+                                                        v-model="newEvent.endTime"
+                                                        type="datetime"
+                                                        placeholder="Select end time"
+                                                >
+                                                </el-date-picker>
+                                            </el-form-item>
+
+                                            <el-form-item label="Place:">
+                                                <el-input placeholder="Input holding place" v-model="newEvent.place">
+                                                </el-input>
+                                            </el-form-item>
+
+                                            <el-form-item label="Required volunteers number:">
+                                                <el-input-number v-model="newEvent.requiredVolunteersNumber" :min="1" :max="1000">
+                                                </el-input-number>
+                                            </el-form-item>
+
+                                            <el-form-item label="Description:">
+                                                <el-input placeholder="Input description" v-model="newEvent.description"
+                                                          type="textarea">
+                                                </el-input>
+                                            </el-form-item>
+
+                                        </el-form>
+                                        <el-divider></el-divider>
+                                        <el-button @click="createNewEvent">Save</el-button>
                                     </el-dialog>
-                                    <el-divider direction="vertical" v-if="row.role!='Admin'"></el-divider>
-                                    <el-link type="primary" :underline="false" @click="deleteUser(row)" v-if="row.status!='2'">
-                                        Delete
-                                    </el-link>
-                                    <el-link type="primary" :underline="false" @click="recoverUser(row)" v-if="row.status=='2'">
-                                        Recover
-                                    </el-link>
-                                    <el-divider direction="vertical"></el-divider>
-                                    <el-link type="primary" :underline="false" @click="frozeUser(row)" v-if="row.status!='1'">
-                                        Froze
-                                    </el-link>
-                                    <el-link type="primary" :underline="false" @click="unfrozeUser(row)" v-if="row.status=='1'">
-                                        Unfroze
-                                    </el-link>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </div>
-                    <div class="event-management" v-if="currentIndex=='3'">
-                        <el-button type="primary">Create event</el-button>
-                        <el-table :data="eventList">
-                            <el-table-column
-                                    label="Event ID"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>{{row.eventId}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Title"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>{{row.title}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Status"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>{{eventStatus[row.status]}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Start time"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>{{row.startTime}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="End time"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>{{row.endTime}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Required volunteers number"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>{{row.requiredVolunteersNumber}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Volunteers number so far"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>{{row.volunteersNumberSoFar}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    label="Amount of fund"
-                                    align="center"
-                                    min-width="100px">
-                                <template slot-scope="{row}">
-                                    <span>${{row.amountOfFund}}</span>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </div>
-                    <div class="program-management" v-if="currentIndex=='4'">
-                        <el-table>
+                                    <el-table :data="eventList">
+                                        <el-table-column
+                                                label="Event ID"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>{{row.eventId}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="Title"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>{{row.title}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="Status"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>{{eventStatus[row.status]}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="Start time"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>{{row.startTime}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="End time"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>{{row.endTime}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="Required volunteers number"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>{{row.requiredVolunteersNumber}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="Volunteers number so far"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>{{row.volunteersNumberSoFar}}</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column
+                                                label="Amount of fund"
+                                                align="center"
+                                                min-width="100px">
+                                            <template slot-scope="{row}">
+                                                <span>${{row.amountOfFund}}</span>
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                </el-dialog>
 
-                        </el-table>
-                    </div>
-                </el-main>
-            </el-container>
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" :underline="false" @click="openDonorsInfoDialog(row)">
+                                    Donors info
+                                </el-link>
+                                <el-dialog :visible.sync="donorsInfoDialogVisible" title="Donors donated the program">
+
+                                </el-dialog>
+
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" :underline="false" @click="openEditEventsDialog(row)">
+                                    Edit events
+                                </el-link>
+                                <el-dialog :visible.sync="editEventsDialogVisible" title="Edit events the program owned">
+                                    <el-select></el-select>
+                                </el-dialog>
+
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" :underline="false" @click="deleteTheProgram(row)"
+                                         v-if="row.status!='2'">
+                                    Delete
+                                </el-link>
+                                <el-link type="primary" :underline="false" @click="recoverProgram(row)"
+                                         v-if="row.status=='2'">
+                                    Recover
+                                </el-link>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <el-dialog :visible.sync="createProgramDialogVisible" title="Create new program">
+
+                        <el-form v-model="newProgram">
+                            <el-form-item label="Title:">
+                                <el-input placeholder="Input the program's title" v-model="newProgram.title"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <el-divider></el-divider>
+                        <el-button @click="createNewProgram">Save</el-button>
+
+                    </el-dialog>
+                </div>
+            </el-main>
         </el-container>
-    </div>
+    </el-container>
+</div>
 </body>
 <script type="module">
     import {editName, editStatus, editPassword, editRole} from "../js/api/user.js";
 
     new Vue({
         el: '#app',
-        data: function() {
+        data: function () {
             return {
                 user: localStorage.getItem("user"),
                 role: localStorage.getItem("role"),
@@ -439,13 +641,15 @@
                                 id: "124",
                                 startTime: "2021-12-01",
                                 endTime: "2021-12-02",
-                                duty: "cleaner"}
+                                duty: "cleaner"
+                            }
                             ],
                             eventsDoing: [{
                                 id: "123",
                                 startTime: "2021-12-02",
                                 endTime: "2021-12-02",
-                                duty: "cleaner"}
+                                duty: "cleaner"
+                            }
                             ]
                         },
                         donationAmount: "",
@@ -482,7 +686,7 @@
                     donorsInfo: []
                 }],
                 volunteerEvents: [],//List of every events including doing and be done
-                myInfo:{
+                myInfo: {
                     userId: "12345678",
                     firstName: "AB",
                     lastName: "C",
@@ -493,11 +697,31 @@
                     donationInfo: [],
                     status: "0"
                 },
-                passwordForm:{
+                myInfoRule: {
+                    firstName: [
+                        { required: true, message: 'Please input your first name!', trigger: 'blur' },
+                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    ],
+                    lastName: [
+                        { required: true, message: 'Please input your last name!', trigger: 'blur' },
+                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    ],
+                },
+                passwordForm: {
                     id: localStorage.getItem("user"),
                     password: "",
                     newPassword: "",
                     confirmPassword: ""
+                },
+                passwordFormRule:{
+                    password: [
+                        { required: true, message: 'Please input your password!', trigger: 'blur' },
+                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    ],
+                    lastName: [
+                        { required: true, message: 'Please input your first name!', trigger: 'blur' },
+                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    ],
                 },
                 userInfo: {
                     userId: "",
@@ -510,6 +734,29 @@
                     donationInfo: [],
                     status: "0",
                 },
+                newEvent: {
+                    eventId: undefined,
+                    title: undefined,
+                    startTime: undefined,
+                    endTime: undefined,
+                    place: undefined,
+                    amountOfFund: undefined,
+                    requiredVolunteersNumber: 1,
+                    volunteersNumberSoFar: 0,
+                    description: "",
+                    status: "0",
+                    programBelongsTo: undefined,
+                    volunteersInfo: [],
+                    donorsInfo: []
+                },
+                newProgram: {
+                    programId: undefined,
+                    event: [],
+                    title: undefined,
+                    amountOfFund: 0,
+                    status: "0",
+                    donorsInfo: []
+                },
                 statusList: {
                     "0": "normal",
                     "1": "frozen",
@@ -518,98 +765,98 @@
                 eventStatus: {
                     "0": "normal",
                     "1": "finished",
-                    "2": "deleted"
+                    "2": "deleted/canceled"
                 },
                 editUserDialogVisible: false,
-                userDetailDialogVisible: false
+                userDetailDialogVisible: false,
+                createEventDialogVisible: false,
+                createProgramDialogVisible: false,
+                eventsInfoDialogVisible: false,
+                donorsInfoDialogVisible: false,
+                editEventsDialogVisible: false
             }
         },
-        methods:{
-            logout(){
+        methods: {
+            logout() {
                 localStorage.removeItem("user")
                 localStorage.removeItem("role")
             },
-            ifShow(role){
-                if (role == this.role){
+            ifShow(role) {
+                if (role == this.role) {
                     return true
-                }
-                else{
+                } else {
                     return false
                 }
             },
-            indexChange(index){
+            indexChange(index) {
                 this.currentIndex = index
             },
-            openEditMyInfoDialog(){
+            openEditMyInfoDialog() {
                 this.editMyInfoDialogVisible = true
             },
-            openEditPasswordDialog(){
+            openEditPasswordDialog() {
                 this.editPasswordDialogVisible = true
             },
-            editMyInfo(){
+            editMyInfo() {
                 let res = editName({
                     first_name: this.myInfo.firstName,
                     last_name: this.myInfo.lastName
                 })
-                if (res.code == "success"){
+                if (res.code == "success") {
                     this.$message.success('Edit your info successfully!')
-                }
-                else{
+                } else {
                     this.$message.error('Operation failed!')
                 }
                 this.editUserDialogVisible = false
             },
-            editMyPassword(){
+            editMyPassword() {
                 let res = editPassword({
                     id: this.passwordForm.id,
                     password: this.passwordForm.password,
                     new_password: this.passwordForm.newPassword
                 })
-                if (res.code == "success"){
+                if (res.code == "success") {
                     this.$message.success('Edit password successfully!')
-                }
-                else{
+                } else {
                     this.$message.error('Operation failed!')
                 }
                 this.editPasswordDialogVisible = false
             },
-            closeEditMyInfoDialog(){
+            closeEditMyInfoDialog() {
                 this.editMyInfoDialogVisible = false
             },
-            closeEditPasswordDialog(){
+            closeEditPasswordDialog() {
                 this.editPasswordDialogVisible = false
             },
             // User management part
-            openEditUserDialog(row){
+            openEditUserDialog(row) {
                 this.userInfo = row
                 this.editUserDialogVisible = true
             },
-            editUser(){
+            editUser() {
                 let res = editName({
                     first_name: this.userInfo.firstName,
                     last_name: this.userInfo.lastName
                 })
-                if (res.code == "success"){
+                if (res.code == "success") {
                     res = editRole({
                         id: localStorage.getItem('user'),
                         role: this.userInfo.role
                     })
-                    if (res.code == "success"){
+                    if (res.code == "success") {
                         this.$message.success('Edit user info successfully!')
-                    }
-                    else{
+                    } else {
                         this.$message.error('Operation failed!')
                     }
-                }
-                else{
+                } else {
                     this.$message.error('Operation failed!')
                 }
                 this.editUserDialogVisible = false
             },
-            openUserDetailDialog(row){
+            openUserDetailDialog(row) {
                 this.userInfo = row
                 this.volunteerEvents = []
-                row.volunteerEvents.eventsJoined.forEach(event=>{
+                row.volunteerEvents.eventsJoined.forEach(event => {
                     this.volunteerEvents.push({
                         id: event.id,
                         startTime: event.startTime,
@@ -618,7 +865,7 @@
                         type: "finished"
                     })
                 })
-                row.volunteerEvents.eventsDoing.forEach(event=>{
+                row.volunteerEvents.eventsDoing.forEach(event => {
                     this.volunteerEvents.push({
                         id: event.id,
                         startTime: event.startTime,
@@ -629,61 +876,106 @@
                 })
                 this.userDetailDialogVisible = true
             },
-            deleteUser(row){
+            deleteUser(row) {
                 let res = editStatus({
                     'id': row.userId,
                     'status': "2",
                 })
-                if (res.code == "success"){
+                if (res.code == "success") {
                     this.$message.success("Delete user successfully!")
-                }
-                else{
+                } else {
                     this.$message.error("Operation failed!")
                 }
             },
-            recoverUser(row){
+            recoverUser(row) {
                 let res = editStatus({
                     'id': row.userId,
                     'status': "0",
                 })
-                if (res.code == "success"){
+                if (res.code == "success") {
                     this.$message.success("Recover user successfully!")
-                }
-                else{
+                } else {
                     this.$message.error("Operation failed!")
                 }
             },
-            frozeUser(row){
+            frozeUser(row) {
                 let res = editStatus({
                     'id': row.userId,
                     'status': "1",
                 })
-                if (res.code == "success"){
+                if (res.code == "success") {
                     this.$message.success("Froze user successfully!")
-                }
-                else{
+                } else {
                     this.$message.error("Operation failed!")
                 }
             },
-            unfrozeUser(row){
+            unfrozeUser(row) {
                 let res = editStatus({
                     'id': row.userId,
                     'status': "0",
                 })
-                if (res.code == "success"){
+                if (res.code == "success") {
                     this.$message.success("Unfroze user successfully!")
-                }
-                else{
+                } else {
                     this.$message.error("Operation failed!")
                 }
             },
             //Event management part
+            openCreateEventDialog() {
+                this.newEvent = {
+                    eventId: undefined,
+                    title: undefined,
+                    startTime: undefined,
+                    endTime: undefined,
+                    place: undefined,
+                    amountOfFund: undefined,
+                    requiredVolunteersNumber: undefined,
+                    volunteersNumberSoFar: 0,
+                    description: "",
+                    status: "0",
+                    programBelongsTo: undefined,
+                    volunteersInfo: [],
+                    donorsInfo: []
+                }
+                this.createEventDialogVisible = true
+            },
+            createNewEvent() {
+                this.$message.success('Create event successfully!')
+                this.createEventDialogVisible = false
+            },
+            //Program management part
+            openCreateProgramDialog(){
+                this.newProgram = {
+                    programId: undefined,
+                    event: [],
+                    title: undefined,
+                    amountOfFund: 0,
+                    status: "0",
+                    donorsInfo: []
+                }
+                this.createProgramDialogVisible = true
+            },
+            openEventsInfoDialog(row){
+                this.eventsInfoDialogVisible = true
+            },
+            openDonorsInfoDialog(row){
+                this.donorsInfoDialogVisible = true
+            },
+            openEditEventsDialog(row){
+                this.editEventsDialogVisible = true
+            },
+            deleteTheProgram(row){
 
-        },
-        watch:{
+            },
+            recoverProgram(row){
 
+            },
+            createNewProgram(){
+
+            }
         },
-        create(){
+        watch: {},
+        create() {
 
         }
     })

@@ -14,7 +14,7 @@
             </div>
             <el-divider></el-divider>
             <div class="body">
-                <el-form ref="form" :model="userForm">
+                <el-form ref="form" :model="userForm" :rule="userFormRule">
                     <el-form-item label="First Name" class="input">
                         <el-input placeholder="Input your first name" v-model="userForm.firstName" label="User name:"></el-input>
                     </el-form-item>
@@ -71,6 +71,16 @@
                     password: "",
                     confirmPassword: "",
                     role: "2"
+                },
+                userFormRule:{
+                    firstName: [
+                        { required: true, message: 'Please input your first name!', trigger: 'blur' },
+                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    ],
+                    lastName: [
+                        { required: true, message: 'Please input your last name!', trigger: 'blur' },
+                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    ],
                 },
                 userId: "12345678",
                 successVisible: false,
