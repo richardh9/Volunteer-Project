@@ -14,17 +14,17 @@
             </div>
             <el-divider></el-divider>
             <div class="body">
-                <el-form ref="form" :model="userForm" :rule="userFormRule">
-                    <el-form-item label="First Name" class="input">
+                <el-form ref="userForm" :model="userForm" :rule="userFormRule">
+                    <el-form-item label="First Name" class="input" prop="firstName">
                         <el-input placeholder="Input your first name" v-model="userForm.firstName" label="User name:"></el-input>
                     </el-form-item>
-                    <el-form-item label="Last Name" class="input">
+                    <el-form-item label="Last Name" class="input" prop="lastName">
                         <el-input placeholder="Input your last name" v-model="userForm.lastName" label="User name:"></el-input>
                     </el-form-item>
-                    <el-form-item label="Password" class="input">
+                    <el-form-item label="Password" class="input" prop="password">
                         <el-input placeholder="Input password" show-password v-model="userForm.password" label="Password:"></el-input>
                     </el-form-item>
-                    <el-form-item label="Confirm Password" class="input">
+                    <el-form-item label="Confirm Password" class="input" prop="confirmPassword">
                         <el-input placeholder="Confirm password" show-password v-model="userForm.confirmPassword" label="Confirm password:"></el-input>
                     </el-form-item>
                     <el-form-item class="input">
@@ -60,8 +60,23 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script type="module">
     import {register} from "../js/api/user.js";
-
-    new Vue({
+    var confirmPasswordValidator = (rule, value, callback)=>{
+        if (value.length==0){
+            callback(new Error('Please confirm your password!'))
+        }
+        else {
+            if ((value.length < 6) || (value.length > 15)) {
+                callback(new Error('The length should be between 6 and 15!'))
+            } else {
+                if (value != app.userForm.password) {
+                    callback(new Error('Entered passwords differ!'))
+                } else {
+                    callback()
+                }
+            }
+        }
+    }
+    let app = new Vue({
         el: '#app',
         data: function() {
             return {
@@ -80,6 +95,13 @@
                     lastName: [
                         { required: true, message: 'Please input your last name!', trigger: 'blur' },
                         { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: 'Please input your last password!', trigger: 'blur' },
+                        { min: 6, max: 15, message: 'The length should be between 6 and 15!', trigger: 'blur' }
+                    ],
+                    confirmPassword: [
+                        { required: true, validator: confirmPasswordValidator, trigger: 'blur' },
                     ],
                 },
                 userId: "12345678",
@@ -110,7 +132,7 @@
                 if (str == "index"){
                     window.location.href="../src/index.html"
                 }
-            }
+            },
         }
     })
 </script>

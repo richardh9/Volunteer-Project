@@ -77,16 +77,16 @@
                             <el-button size="medium" @click="openEditPasswordDialog">Edit password</el-button>
                         </div>
                         <!--Edit my info dialog-->
-                        <el-dialog title="Edit my info" :visible.sync="editMyInfoDialogVisible" :append-to-body="true">
-                            <el-form :model="myInfo" :rule="myInfoRule">
+                        <el-dialog title="Edit my info" :v-if="editMyInfoDialogVisible" :visible.sync="editMyInfoDialogVisible" :append-to-body="true">
+                            <el-form :model="myInfo" :rules="myInfoRule">
                                 <el-form-item label="User ID:">
                                     <el-input v-model="user" :disabled="true"></el-input>
                                 </el-form-item>
-                                <el-form-item label="First name:">
-                                    <el-input v-model="myInfo.firstName" prop="firstName"></el-input>
+                                <el-form-item label="First name:" prop="firstName">
+                                    <el-input v-model="myInfo.firstName"></el-input>
                                 </el-form-item>
-                                <el-form-item label="First name:">
-                                    <el-input v-model="myInfo.lastName" prop="lastName"></el-input>
+                                <el-form-item label="Last name:" prop="lastName">
+                                    <el-input v-model="myInfo.lastName"></el-input>
                                 </el-form-item>
                             </el-form>
                             <el-button @click="editMyInfo">Submit</el-button>
@@ -96,19 +96,19 @@
                         <!--Edit password dialog-->
                         <el-dialog title="Edit my password" :visible.sync="editPasswordDialogVisible"
                                    :append-to-body="true">
-                            <el-form :model="passwordForm">
+                            <el-form :model="passwordForm" :rules="passwordFormRule">
                                 <el-form-item label="User ID:" disabled="true">
                                     <el-input v-model="user"></el-input>
                                 </el-form-item>
-                                <el-form-item label="Password:">
+                                <el-form-item label="Password:" prop="password">
                                     <el-input placeholder="Input your password" show-password
                                               v-model="passwordForm.password"></el-input>
                                 </el-form-item>
-                                <el-form-item label="New password:">
+                                <el-form-item label="New password:" prop="newPassword">
                                     <el-input placeholder="Input your new password" show-password
                                               v-model="passwordForm.newPassword"></el-input>
                                 </el-form-item>
-                                <el-form-item label="User ID:">
+                                <el-form-item label="Confirm password:" prop="confirmPassword">
                                     <el-input placeholder="Confirm your new password" show-password
                                               v-model="passwordForm.confirmPassword"></el-input>
                                 </el-form-item>
@@ -584,8 +584,23 @@
 </body>
 <script type="module">
     import {editName, editStatus, editPassword, editRole} from "../js/api/user.js";
-
-    new Vue({
+    var confirmPasswordValidator = (rule, value, callback)=>{
+        if (value.length==0){
+            callback(new Error('Please confirm your password!'))
+        }
+        else {
+            if ((value.length < 6) || (value.length > 15)) {
+                callback(new Error('The length should be between 6 and 15!'))
+            } else {
+                if (value != app.passwordForm.newPassword) {
+                    callback(new Error('Entered passwords differ!'))
+                } else {
+                    callback()
+                }
+            }
+        }
+    }
+    let app = new Vue({
         el: '#app',
         data: function () {
             return {
@@ -716,11 +731,14 @@
                 passwordFormRule:{
                     password: [
                         { required: true, message: 'Please input your password!', trigger: 'blur' },
-                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                        { min: 6, max: 15, message: 'The length should be between 6 and 15!', trigger: 'blur' }
                     ],
-                    lastName: [
-                        { required: true, message: 'Please input your first name!', trigger: 'blur' },
-                        { min: 1, max: 30, message: 'The length should be between 1 and 30!', trigger: 'blur' }
+                    newPassword: [
+                        { required: true, message: 'Please input your new password!', trigger: 'blur' },
+                        { min: 6, max: 15, message: 'The length should be between 6 and 15!', trigger: 'blur' }
+                    ],
+                    confirmPassword: [
+                        { required: true, validator: confirmPasswordValidator, trigger: 'blur' },
                     ],
                 },
                 userInfo: {
