@@ -78,15 +78,15 @@
                         </div>
                         <!--Edit my info dialog-->
                         <el-dialog title="Edit my info" :v-if="editMyInfoDialogVisible" :visible.sync="editMyInfoDialogVisible" :append-to-body="true">
-                            <el-form :model="myInfo" :rules="myInfoRule">
+                            <el-form :model="myInfoSubmitted" :rules="myInfoRule" ref="myInfo">
                                 <el-form-item label="User ID:">
                                     <el-input v-model="user" :disabled="true"></el-input>
                                 </el-form-item>
                                 <el-form-item label="First name:" prop="firstName">
-                                    <el-input v-model="myInfo.firstName"></el-input>
+                                    <el-input v-model="myInfoSubmitted.firstName"></el-input>
                                 </el-form-item>
                                 <el-form-item label="Last name:" prop="lastName">
-                                    <el-input v-model="myInfo.lastName"></el-input>
+                                    <el-input v-model="myInfoSubmitted.lastName"></el-input>
                                 </el-form-item>
                             </el-form>
                             <el-button @click="editMyInfo">Submit</el-button>
@@ -119,11 +119,22 @@
                     </div>
                 </div>
                 <div class="user-management" v-if="currentIndex=='2'">
+                    <el-select v-model="userQuery.role" placeholder="Select role" clearable>
+                        <el-option
+                                v-for="item in roleList"
+                                :key="item"
+                                :label="item"
+                                :value="item"
+                        >
+                        </el-option>
+                    </el-select>
+                    <el-button @click="queryUser" type="primary">Query</el-button>
                     <el-table
                             :data="userList"
                             style="width:100%"
                             :fit="false"
                             fit
+                            :v-loading="userListLoading"
                             row-key="id"
                             border
                             highlight-current-row
@@ -147,7 +158,6 @@
                         <el-table-column
                                 label="Role"
                                 align="center"
-                                sortable
                                 min-width="10%">
                             <template slot-scope="{row}">
                                 <span>{{row.role}}</span>
@@ -162,7 +172,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                                label="Operation"
+                                label="Operations"
                                 align="center"
                                 min-width="40%">
                             <template slot-scope="{row}">
@@ -313,7 +323,7 @@
                     </el-table>
                 </div>
                 <div class="event-management" v-if="currentIndex=='3'">
-                    <el-table :data="eventList">
+                    <el-table :data="allEventList">
                         <el-table-column
                                 label="Event ID"
                                 align="center"
@@ -376,6 +386,25 @@
                                 min-width="100px">
                             <template slot-scope="{row}">
                                 <span>${{row.amountOfFund}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="Operations"
+                                align="center"
+                                min-width="100px">
+                            <template slot-scope="{row}">
+                                <el-link type="primary" :underline="false" @click="openEventDetailDialog(row)">
+                                    Detail
+                                </el-link>
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" :underline="false" @click="finishEvent(row)" v-if="row.status=='0'">
+                                    Finish
+                                </el-link>
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" :underline="false" @click="deleteEvent(row)" v-if="row.status=='0'">
+                                    Delete
+                                </el-link>
+                                <el-divider direction="vertical"></el-divider>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -607,11 +636,15 @@
                 user: localStorage.getItem("user"),
                 role: localStorage.getItem("role"),
                 roleList: ["Admin", "Donor", "Volunteer"],
+                userQuery: {
+                    role: ""
+                },
                 currentIndex: '1',
                 editMyInfoDialogVisible: false,//edit user's own info dialog
                 editPasswordDialogVisible: false,//edit user's own password dialog
                 newName: "",
                 newPassword: "",
+                userListLoading: false,
                 userList: [{
                     userId: "123456",
                     firstName: "AB",
@@ -671,7 +704,27 @@
                         donationInfo: [],
                         status: "0"
                     },],//List of users
+                allUserList: [],
                 eventList: [{
+                    eventId: "123",
+                    title: "ABC",
+                    startTime: "2021-12-01",
+                    endTime: "2021-12-02",
+                    place: "Beijing",
+                    amountOfFund: 100,
+                    requiredVolunteersNumber: 100,
+                    volunteersNumberSoFar: 90,
+                    description: "ABC is a event.",
+                    status: "0",
+                    programBelongsTo: "321",
+                    volunteersInfo: [],
+                    donorsInfo: [{
+                        donorId: "12345679",
+                        donationTime: "2021-12-01",
+                        amount: 100
+                    }]
+                }],
+                allEventList: [{
                     eventId: "123",
                     title: "ABC",
                     startTime: "2021-12-01",
@@ -702,6 +755,17 @@
                 }],
                 volunteerEvents: [],//List of every events including doing and be done
                 myInfo: {
+                    userId: "12345678",
+                    firstName: "AB",
+                    lastName: "C",
+                    role: "Admin",
+                    volunteerTime: "",
+                    volunteerEvents: [],
+                    donationAmount: "",
+                    donationInfo: [],
+                    status: "0"
+                },
+                myInfoSubmitted:{
                     userId: "12345678",
                     firstName: "AB",
                     lastName: "C",
@@ -810,6 +874,7 @@
                 this.currentIndex = index
             },
             openEditMyInfoDialog() {
+                this.myInfoSubmitted = JSON.parse(JSON.stringify(this.myInfo))
                 this.editMyInfoDialogVisible = true
             },
             openEditPasswordDialog() {
@@ -817,8 +882,8 @@
             },
             editMyInfo() {
                 let res = editName({
-                    first_name: this.myInfo.firstName,
-                    last_name: this.myInfo.lastName
+                    first_name: this.myInfoSubmitted.firstName,
+                    last_name: this.myInfoSubmitted.lastName
                 })
                 if (res.code == "success") {
                     this.$message.success('Edit your info successfully!')
@@ -847,6 +912,16 @@
                 this.editPasswordDialogVisible = false
             },
             // User management part
+            queryUser(){
+                this.userListLoading = true
+                this.userList = []
+                this.allUserList.forEach(user=>{
+                    if ((user.role==this.userQuery.role) || (this.userQuery.role == "")){
+                        this.userList.push(user)
+                    }
+                })
+                this.userListLoading = false
+            },
             openEditUserDialog(row) {
                 this.userInfo = row
                 this.editUserDialogVisible = true
@@ -993,8 +1068,69 @@
             }
         },
         watch: {},
-        create() {
-
+        created: function(){
+            this.userList = [{
+                userId: "123456",
+                firstName: "AB",
+                lastName: "C",
+                role: "Admin",
+                volunteerTime: "",
+                volunteerEvents: {
+                    eventsJoined: [],
+                    eventsDoing: []
+                },
+                donationAmount: "",
+                donationInfo: [],
+                status: "0"
+            },
+                {
+                    userId: "12345679",
+                    firstName: "AB",
+                    lastName: "D",
+                    role: "Donor",
+                    volunteerTime: "",
+                    volunteerEvents: {
+                        eventsJoined: [],
+                        eventsDoing: []
+                    },
+                    donationAmount: 100,
+                    donationInfo: [{
+                        id: "123",
+                        type: "Event",
+                        donationTime: "2021-12-01",
+                        amount: 100
+                    }],
+                    status: "0"
+                },
+                {
+                    userId: "12345680",
+                    firstName: "AB",
+                    lastName: "E",
+                    role: "Volunteer",
+                    volunteerTime: 100,
+                    volunteerEvents: {
+                        eventsJoined: [{
+                            id: "124",
+                            startTime: "2021-12-01",
+                            endTime: "2021-12-02",
+                            duty: "cleaner"
+                        }
+                        ],
+                        eventsDoing: [{
+                            id: "123",
+                            startTime: "2021-12-02",
+                            endTime: "2021-12-02",
+                            duty: "cleaner"
+                        }
+                        ]
+                    },
+                    donationAmount: "",
+                    donationInfo: [],
+                    status: "0"
+                },]
+            this.userList.forEach(user=>{
+                this.allUserList.push(user)
+            })
         }
     })
 </script>

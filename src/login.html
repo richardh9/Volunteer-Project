@@ -14,7 +14,7 @@
             </div>
             <el-divider></el-divider>
             <div class="body">
-                <el-form v-model="userForm" ref="userForm" :rules="userFormRule">
+                <el-form :model="userForm" ref="userForm" :rules="userFormRule">
                     <el-form-item class="input" prop="userId">
                         <el-input placeholder="Input your Id" v-model="userForm.userId"></el-input>
                     </el-form-item>
@@ -52,11 +52,11 @@
                         { min: 6, max: 15, message: 'The length should be between 6 and 15!', trigger: 'blur' }
                     ],
                     password: [
-                        { required: true, message: 'Please input your last password!', trigger: 'blur' },
+                        { required: true, message: 'Please input your password!', trigger: 'blur' },
                         { min: 6, max: 15, message: 'The length should be between 6 and 15!', trigger: 'blur' }
                     ],
                 },
-                role: "Admin"
+                role: "Volunteer"
             }
         },
         methods:{

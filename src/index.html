@@ -23,19 +23,175 @@
             <el-container>
                 <el-header>
                     <el-menu
-                        mode="horizontal">
-                        <el-menu-item index="programs">
-                            <template #title>
-                                Programs
-                            </template>
-                        </el-menu-item>
-                        <el-menu-item index="aboutUs">
+                        mode="horizontal"
+                        default-active="1"
+                        @select="indexChange"
+                        ref="navbar"
+                        background-color="white"
+                        text-color="black"
+                        active-text-color="blue">
+                        <el-menu-item index="1">
                             <template #title>
                                 About us
                             </template>
                         </el-menu-item>
+                        <el-menu-item index="2">
+                            <template #title>
+                                Programs
+                            </template>
+                        </el-menu-item>
                     </el-menu>
+                    <el-main>
+                        <div v-if="currentIndex=='1'">
+                            <el-button v-if="role=='Donor'" @click="openDonateDialog('1')">Donate Us</el-button>
+                            <el-dialog :visible.sync="donateDialogVisible" title="Donate">
+
+                                <el-form v-model="donateForm">
+                                    <el-form-item label="Donation number:">
+                                        <el-input-number v-model="donateForm.amount"></el-input-number>
+                                    </el-form-item>
+                                </el-form>
+                                <el-divider></el-divider>
+                                <el-button @click="donate">Donate</el-button>
+
+                            </el-dialog>
+                        </div>
+                        <div v-if="currentIndex=='2'">
+                            <el-table :data="programList">
+                                <el-table-column
+                                        label="Program ID"
+                                        align="center"
+                                        min-width="100px">
+                                    <template slot-scope="{row}">
+                                        <span>{{row.programId}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="Title"
+                                        align="center"
+                                        min-width="100px">
+                                    <template slot-scope="{row}">
+                                        <span>{{row.title}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="Status"
+                                        align="center"
+                                        min-width="100px">
+                                    <template slot-scope="{row}">
+                                        <span>{{eventStatus[row.status]}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="Amount of fund"
+                                        align="center"
+                                        min-width="100px">
+                                    <template slot-scope="{row}">
+                                        <span>${{row.amountOfFund}}</span>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label="Operations"
+                                        align="center"
+                                        min-width="100px">
+                                    <template slot-scope="{row}">
+                                        <el-link type="primary" :underline="false" @click="openEventsInfoDialog(row)">
+                                            Events info
+                                        </el-link>
+                                        <el-dialog :visible.sync="eventsInfoDialogVisible" title="Events info" width="80%">
+                                            <el-table :data="eventList">
+                                                <el-table-column
+                                                        label="Event ID"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.eventId}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Title"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.title}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Status"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{eventStatus[row.status]}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Start time"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.startTime}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="End time"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.endTime}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Required volunteers number"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.requiredVolunteersNumber}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Volunteers number so far"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <span>{{row.volunteersNumberSoFar}}</span>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column
+                                                        label="Operation"
+                                                        v-if="role!='Guest'"
+                                                        align="center"
+                                                        min-width="100px">
+                                                    <template slot-scope="{row}">
+                                                        <el-link @click="joinEvent(row)" v-if="role=='Volunteer'">Join</el-link>
+                                                        <el-link @click="openDonateDialog(row.eventId)" v-if="role=='Donor'" :underline="false">Donate</el-link>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </el-dialog>
+                                        <el-divider direction="vertical"></el-divider>
+                                        <el-link type="primary" :underline="false" @click="openDonateDialog(row.programId)" v-if="role=='Donor'">
+                                            Donate
+                                        </el-link>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <el-dialog :visible.sync="donateDialogVisible" title="Donate">
+
+                                <el-form v-model="donateForm">
+                                    <el-form-item label="Donation number:">
+                                        <el-input-number v-model="donateForm.amount"></el-input-number>
+                                    </el-form-item>
+                                </el-form>
+                                <el-divider></el-divider>
+                                <el-button @click="donate">Donate</el-button>
+
+                            </el-dialog>
+                        </div>
+                    </el-main>
                 </el-header>
+                <el-main>
+
+                </el-main>
             </el-container>
         </el-container>
     </div>
@@ -49,13 +205,68 @@
         el: '#app',
         data: function() {
             return {
-                role: (!localStorage.getItem('role'))?"Guest":localStorage.getItem('role')
+                role: (!localStorage.getItem('role'))?"Guest":localStorage.getItem('role'),
+                currentIndex: "1",
+                programList: [{
+                    programId: "321",
+                    event: [{
+                        eventId: "123",
+                    },],
+                    title: "ABCD",
+                    amountOfFund: 100,
+                    status: "0",
+                    donorsInfo: []
+                }],
+                eventList: [{
+                    eventId: "123",
+                    title: "ABC",
+                    startTime: "2021-12-01",
+                    endTime: "2021-12-02",
+                    place: "Beijing",
+                    amountOfFund: 100,
+                    requiredVolunteersNumber: 100,
+                    volunteersNumberSoFar: 90,
+                    description: "ABC is a event.",
+                    status: "0",
+                    programBelongsTo: "321",
+                    volunteersInfo: [],
+                    donorsInfo: [{
+                        donorId: "12345679",
+                        donationTime: "2021-12-01",
+                        amount: 100
+                    }]
+                }],
+                eventsInfoDialogVisible: false,
+                eventStatus: {
+                    "0": "normal",
+                    "1": "finished",
+                    "2": "deleted/canceled"
+                },
+                donateDialogVisible: false,
+                donateForm: {
+                    "id": "",
+                    "amount": 0
+                }
             }
         },
         methods:{
             logout(){
                 localStorage.removeItem("user")
                 localStorage.removeItem("role")
+            },
+            indexChange(index) {
+                this.currentIndex = index
+            },
+            openEventsInfoDialog(row){
+                this.eventsInfoDialogVisible = true
+            },
+            openDonateDialog(id){
+                this.donateForm.id = id
+                this.donateForm.amount = 0
+                this.donateDialogVisible = true
+            },
+            donate(){
+
             }
         },
     })
