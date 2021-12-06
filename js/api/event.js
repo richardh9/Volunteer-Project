@@ -11,7 +11,7 @@ export function createEvent(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
@@ -37,7 +37,7 @@ export function createProgram(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
@@ -63,7 +63,7 @@ export function joinEvent(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
@@ -89,7 +89,7 @@ export function quitEvent(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
@@ -115,7 +115,7 @@ export function finishEvent(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
@@ -141,7 +141,7 @@ export function donate(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
@@ -167,7 +167,7 @@ export function getInfo(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     var data = {}
     httpRequest.send(para)
@@ -176,7 +176,7 @@ export function getInfo(data){
             var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             code = json.code
             msg = json.msg
-            if (code == "200"){
+            if (code == 200){
                 data = json.data
             }
         }
@@ -197,7 +197,7 @@ export function findList(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
-    let code = "200"
+    let code = 200
     let msg = ""
     var data = {}
     httpRequest.send(para)

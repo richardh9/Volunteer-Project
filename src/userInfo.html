@@ -602,7 +602,7 @@
                             </el-form-item>
                         </el-form>
                         <el-divider></el-divider>
-                        <el-button @click="createNewProgram">Save</el-button>
+                        <el-button @click="createNewProgram">Create</el-button>
 
                     </el-dialog>
                 </div>
@@ -613,6 +613,7 @@
 </body>
 <script type="module">
     import {editName, editStatus, editPassword, editRole} from "../js/api/user.js";
+    import {createProgram} from "../js/api/event";
     var confirmPasswordValidator = (rule, value, callback)=>{
         if (value.length==0){
             callback(new Error('Please confirm your password!'))
@@ -816,6 +817,7 @@
                     donationInfo: [],
                     status: "0",
                 },
+                currentProgramId: '',
                 newEvent: {
                     eventId: undefined,
                     title: undefined,
@@ -1036,6 +1038,15 @@
                 this.createEventDialogVisible = true
             },
             createNewEvent() {
+                let res = createEvent({
+                    'title': this.newEvent.title,
+                    'place' : this.newEvent.place,
+                    'require_volunteers_number' : this.newEvent.requiredVolunteersNumber + "",  // 字符串形式的整数
+                    'description' : this.newEvent.description,
+                    'start' : this.newEvent.startTime, // '%Y-%m-%d %H:%M:%S'
+                    'end' : this.newEvent.endTime,
+                    'program' : this.currentProgramId //event所属的program，不能为空
+                } )
                 this.$message.success('Create event successfully!')
                 this.createEventDialogVisible = false
             },
@@ -1052,6 +1063,7 @@
                 this.createProgramDialogVisible = true
             },
             openEventsInfoDialog(row){
+                this.currentProgramId = row.programId
                 this.eventsInfoDialogVisible = true
             },
             openDonorsInfoDialog(row){
@@ -1067,7 +1079,12 @@
 
             },
             createNewProgram(){
-
+                let res = createProgram({
+                    "title": this.newProgram.title
+                })
+                if (res.code == 200){
+                    this.$message('Create program successfully!')
+                }
             }
         },
         watch: {},

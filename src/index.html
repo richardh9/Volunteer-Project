@@ -103,7 +103,8 @@
                                                 <el-table-column
                                                         label="Status"
                                                         align="center"
-                                                        min-width="100px">
+                                                        min-width="100px"
+                                                        v-if="role!='Guest'">
                                                     <template slot-scope="{row}">
                                                         <span>{{eventStatus[row.status]}}</span>
                                                     </template>
@@ -111,7 +112,8 @@
                                                 <el-table-column
                                                         label="Start time"
                                                         align="center"
-                                                        min-width="100px">
+                                                        min-width="100px"
+                                                        v-if="role!='Guest'">
                                                     <template slot-scope="{row}">
                                                         <span>{{row.startTime}}</span>
                                                     </template>
@@ -119,7 +121,8 @@
                                                 <el-table-column
                                                         label="End time"
                                                         align="center"
-                                                        min-width="100px">
+                                                        min-width="100px"
+                                                        v-if="role!='Guest'">
                                                     <template slot-scope="{row}">
                                                         <span>{{row.endTime}}</span>
                                                     </template>
@@ -127,7 +130,8 @@
                                                 <el-table-column
                                                         label="Required volunteers number"
                                                         align="center"
-                                                        min-width="100px">
+                                                        min-width="100px"
+                                                        v-if="role!='Guest'">
                                                     <template slot-scope="{row}">
                                                         <span>{{row.requiredVolunteersNumber}}</span>
                                                     </template>
@@ -135,7 +139,8 @@
                                                 <el-table-column
                                                         label="Volunteers number so far"
                                                         align="center"
-                                                        min-width="100px">
+                                                        min-width="100px"
+                                                        v-if="role!='Guest'">
                                                     <template slot-scope="{row}">
                                                         <span>{{row.volunteersNumberSoFar}}</span>
                                                     </template>
@@ -144,9 +149,10 @@
                                                         label="Operation"
                                                         v-if="role!='Guest'"
                                                         align="center"
-                                                        min-width="100px">
+                                                        min-width="100px"
+                                                        v-if="role!='Guest'">
                                                     <template slot-scope="{row}">
-                                                        <el-link @click="joinEvent(row)" v-if="role=='Volunteer'">Join</el-link>
+                                                        <el-link @click="joinTheEvent(row)" v-if="role=='Volunteer'">Join</el-link>
                                                         <el-link @click="openDonateDialog(row.eventId)" v-if="role=='Donor'" :underline="false">Donate</el-link>
                                                     </template>
                                                 </el-table-column>
@@ -184,7 +190,7 @@
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<script>
+<script type="module">
     import {findList} from "../js/api/event.js";
 
     new Vue({
@@ -244,7 +250,19 @@
                 this.currentIndex = index
             },
             openEventsInfoDialog(row){
+                let res = findList({
+                    "program": row.programId
+                })
                 this.eventsInfoDialogVisible = true
+            },
+            joinTheEvent(row){
+                let res = joinEvent({
+                    'event_id': row.eventId,
+                    'duty': 'leader'
+                })
+                if (res.code == 200){
+                    this.$message.success('Join the event successfully!')
+                }
             },
             openDonateDialog(id){
                 this.donateForm.id = id
@@ -257,9 +275,17 @@
         },
         created: function(){
             let res = findList({
-                "type": "program"
             })
-            if (res.code == 200){}
+            this.programList = []
+            if (res.code == 200){
+                res.data.return_program_list.forEach(item=>{
+                    this.programList.push(
+                        {
+                            programId: item.id,
+                            title: item.title
+                        })
+                })
+            }
         }
     })
 </script>
