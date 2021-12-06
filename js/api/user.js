@@ -11,20 +11,20 @@ export function register(data){
     httpRequest.setRequestHeader("Content-type","application/json;charset-UTF-8");
     httpRequest.setRequestHeader("token", "register");
     var para = JSON.stringify(data)
-    let code = "success"
+    let code = 200
     let userId = ""
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
             var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            userId = json.data.userId
-            code = "success"
+            userId = json.data.id
+            code = 200
         }
         else{
             code = "failed"
         }
     }
-    if (code == 'success'){
+    if (code == 200){
         return{
             code: code,
             data:{
@@ -51,17 +51,19 @@ export function login(data){
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
     httpRequest.send(para)
-    let code = "success"
+    let code = 200
     let msg = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
             var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            setToken(json.token)
-            code = "success"
-        }
-        else{
-            code = "failed"
-            msg = json.msg
+            code = json.code
+            if (code == 200){
+                setToken(json.token)
+            }
+            else{
+                code = json.code
+                msg = json.msg
+            }
         }
     }
     return {
@@ -81,11 +83,12 @@ export function editRole(data){
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
     httpRequest.send(para)
-    let code = "success"
+    let code = 200
+
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
             var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            code = "success"
+            code = 200
         }
         else{
             code = "failed"
@@ -107,11 +110,11 @@ export function editStatus(data){
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
     httpRequest.send(para)
-    let code = "success"
+    let code = 200
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
             var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            code = "success"
+            code = json.code
         }
         else{
             code = "failed"
@@ -133,18 +136,18 @@ export function editPassword(data){
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
     httpRequest.send(para)
-    let code = "success"
+    let code = 200
+    let msg = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
             var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            code = "success"
-        }
-        else{
-            code = "failed"
+            code = json.code
+            msg = json.msg
         }
     }
     return {
-        code: code
+        code: code,
+        msg: msg
     }
 }
 
@@ -159,11 +162,13 @@ export function editName(data){
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
     httpRequest.send(para)
-    let code = "success"
+    let code = 200
+    let msg = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
             var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            code = "success"
+            code = json.code
+            msg = json.msg
         }
         else{
             code = "failed"
@@ -185,20 +190,36 @@ export function findUser(data){
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
     httpRequest.send(para)
-    let code = "success"
-    let json = ""
+    let code = 200
+    var data = {}
+    let msg = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            code = "success"
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
+            code = json.code
+            if (code == 200){
+                data = json.data
+            }
+            else{
+                msg = json.msg
+            }
         }
         else{
             code = "failed"
         }
     }
-    return {
-        code: code,
-        data: json.data
+    if (code == 200){
+        return {
+            code: code,
+            data: data,
+            msg: msg
+        }
+    }
+    else{
+        return{
+            code: code,
+            msg: msg
+        }
     }
 }
 
@@ -213,20 +234,24 @@ export function getUserInfo(data){
     httpRequest.setRequestHeader("token", getToken());
     var para = JSON.stringify(data)
     httpRequest.send(para)
-    let code = "success"
-    let json = ""
+    let code = 200
+    var data = {
+    }
+    let msg = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
-            code = "success"
-        }
-        else{
-            code = "failed"
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
+            code = json.code
+            msg = json.msg
+            if (code == 200){
+                data = json.data
+            }
         }
     }
     return {
         code: code,
-        data: json.data
+        data: data,
+        msg: msg
     }
 }
 

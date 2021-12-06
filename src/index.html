@@ -185,6 +185,8 @@
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script>
+    import {findList} from "../js/api/event.js";
+
     new Vue({
         el: '#app',
         data: function() {
@@ -254,7 +256,10 @@
             }
         },
         created: function(){
-
+            let res = findList({
+                "type": "program"
+            })
+            if (res.code == 200){}
         }
     })
 </script>
