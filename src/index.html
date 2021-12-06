@@ -168,7 +168,7 @@
                                                 </el-table-column>
                                             </el-table>
                                         </el-dialog>
-                                        <el-divider direction="vertical"></el-divider>
+                                        <el-divider direction="vertical" v-if="role=='Donor'"></el-divider>
                                         <el-link type="primary" :underline="false" @click="openDonateDialog(row.programId)" v-if="role=='Donor'">
                                             Donate
                                         </el-link>
@@ -269,6 +269,9 @@
 
             }
         },
+        created: function(){
+
+        }
     })
 </script>
 </html>

@@ -16,7 +16,7 @@ export function register(data){
     httpRequest.send(para)
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            var json = httpRequest.responseText;//获取到服务端返回的数据
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             userId = json.data.userId
             code = "success"
         }
@@ -52,18 +52,21 @@ export function login(data){
     var para = JSON.stringify(data)
     httpRequest.send(para)
     let code = "success"
+    let msg = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            var json = httpRequest.responseText;//获取到服务端返回的数据
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             setToken(json.token)
             code = "success"
         }
         else{
             code = "failed"
+            msg = json.msg
         }
     }
     return {
-        code: code
+        code: code,
+        msg: msg
     }
 }
 
@@ -81,7 +84,7 @@ export function editRole(data){
     let code = "success"
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            var json = httpRequest.responseText;//获取到服务端返回的数据
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             code = "success"
         }
         else{
@@ -107,7 +110,7 @@ export function editStatus(data){
     let code = "success"
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            var json = httpRequest.responseText;//获取到服务端返回的数据
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             code = "success"
         }
         else{
@@ -133,7 +136,7 @@ export function editPassword(data){
     let code = "success"
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            var json = httpRequest.responseText;//获取到服务端返回的数据
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             code = "success"
         }
         else{
@@ -159,7 +162,7 @@ export function editName(data){
     let code = "success"
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            var json = httpRequest.responseText;//获取到服务端返回的数据
+            var json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             code = "success"
         }
         else{
@@ -186,7 +189,7 @@ export function findUser(data){
     let json = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            json = httpRequest.responseText;//获取到服务端返回的数据
+            json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             code = "success"
         }
         else{
@@ -214,7 +217,7 @@ export function getUserInfo(data){
     let json = ""
     httpRequest.onreadystatechange = function () {//请求后的回调接口，可将请求成功后要执行的程序写在其中
         if (httpRequest.readyState == 4 && httpRequest.status == 200) {//验证请求是否发送成功
-            json = httpRequest.responseText;//获取到服务端返回的数据
+            json = JSON.parse(httpRequest.responseText);//获取到服务端返回的数据
             code = "success"
         }
         else{

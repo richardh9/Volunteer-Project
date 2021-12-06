@@ -859,6 +859,9 @@
             }
         },
         methods: {
+            getUserList(){
+
+            },
             logout() {
                 localStorage.removeItem("user")
                 localStorage.removeItem("role")
@@ -1069,68 +1072,70 @@
         },
         watch: {},
         created: function(){
-            this.userList = [{
-                userId: "123456",
-                firstName: "AB",
-                lastName: "C",
-                role: "Admin",
-                volunteerTime: "",
-                volunteerEvents: {
-                    eventsJoined: [],
-                    eventsDoing: []
-                },
-                donationAmount: "",
-                donationInfo: [],
-                status: "0"
-            },
-                {
-                    userId: "12345679",
-                    firstName: "AB",
-                    lastName: "D",
-                    role: "Donor",
-                    volunteerTime: "",
-                    volunteerEvents: {
-                        eventsJoined: [],
-                        eventsDoing: []
-                    },
-                    donationAmount: 100,
-                    donationInfo: [{
-                        id: "123",
-                        type: "Event",
-                        donationTime: "2021-12-01",
-                        amount: 100
-                    }],
-                    status: "0"
-                },
-                {
-                    userId: "12345680",
-                    firstName: "AB",
-                    lastName: "E",
-                    role: "Volunteer",
-                    volunteerTime: 100,
-                    volunteerEvents: {
-                        eventsJoined: [{
-                            id: "124",
-                            startTime: "2021-12-01",
-                            endTime: "2021-12-02",
-                            duty: "cleaner"
-                        }
-                        ],
-                        eventsDoing: [{
-                            id: "123",
-                            startTime: "2021-12-02",
-                            endTime: "2021-12-02",
-                            duty: "cleaner"
-                        }
-                        ]
-                    },
-                    donationAmount: "",
-                    donationInfo: [],
-                    status: "0"
-                },]
+            // this.userList = [{
+            //     userId: "123456",
+            //     firstName: "AB",
+            //     lastName: "C",
+            //     role: "Admin",
+            //     volunteerTime: "",
+            //     volunteerEvents: {
+            //         eventsJoined: [],
+            //         eventsDoing: []
+            //     },
+            //     donationAmount: "",
+            //     donationInfo: [],
+            //     status: "0"
+            // },
+            //     {
+            //         userId: "12345679",
+            //         firstName: "AB",
+            //         lastName: "D",
+            //         role: "Donor",
+            //         volunteerTime: "",
+            //         volunteerEvents: {
+            //             eventsJoined: [],
+            //             eventsDoing: []
+            //         },
+            //         donationAmount: 100,
+            //         donationInfo: [{
+            //             id: "123",
+            //             type: "Event",
+            //             donationTime: "2021-12-01",
+            //             amount: 100
+            //         }],
+            //         status: "0"
+            //     },
+            //     {
+            //         userId: "12345680",
+            //         firstName: "AB",
+            //         lastName: "E",
+            //         role: "Volunteer",
+            //         volunteerTime: 100,
+            //         volunteerEvents: {
+            //             eventsJoined: [{
+            //                 id: "124",
+            //                 startTime: "2021-12-01",
+            //                 endTime: "2021-12-02",
+            //                 duty: "cleaner"
+            //             }
+            //             ],
+            //             eventsDoing: [{
+            //                 id: "123",
+            //                 startTime: "2021-12-02",
+            //                 endTime: "2021-12-02",
+            //                 duty: "cleaner"
+            //             }
+            //             ]
+            //         },
+            //         donationAmount: "",
+            //         donationInfo: [],
+            //         status: "0"
+            //     },]
+
             this.userList.forEach(user=>{
                 this.allUserList.push(user)
             })
+
         }
     })
 </script>

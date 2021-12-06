@@ -24,7 +24,7 @@
                 </el-form>
             </div>
             <div class="button-group">
-                <el-button @click="login">Login</el-button>
+                <el-button @click="myLogin">Login</el-button>
                 <el-button @click="back">Back Home</el-button>
             </div>
         </div>
@@ -60,7 +60,7 @@
             }
         },
         methods:{
-            login(){
+            myLogin(){
                 // let data = {
                 //     'id': this.userForm.userId,
                 //     'password': this.userForm.password
@@ -74,9 +74,17 @@
                 // else{
                 //     this.$message.error("Login request failed!")
                 // }
-                localStorage.setItem('user', this.userForm.userId)
-                localStorage.setItem('role', this.role)
-                window.location.href="../src/index.html"
+                let res = login({id: this.userForm.userId,
+                password: this.userForm.password})
+                if (res.code == 'success'){
+                    localStorage.setItem('user', this.userForm.userId)
+                    localStorage.setItem('role', this.role)
+                    window.location.href="../src/index.html"
+                    console.log("login")
+                }
+                else{
+                    this.$message.error(res.msg)
+                }
             },
             back(){
                 window.location.href="../src/index.html"
